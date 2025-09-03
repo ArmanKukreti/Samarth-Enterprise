@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const Hero = () => {
   const carouselImages = [
@@ -30,18 +30,61 @@ const Hero = () => {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const timerRef = useRef(null);
+  const [screenWidth, setScreenWidth] = useState("base");
 
-  useEffect(() => {
-    const interval = setInterval(() => {
+  const resetTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % carouselImages.length);
     }, 5000);
-    return () => clearInterval(interval);
+  };
+
+  const handlePrev = () => {
+    setCurrentIndex(
+      (prev) => (prev - 1 + carouselImages.length) % carouselImages.length
+    );
+    resetTimer();
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % carouselImages.length);
+    resetTimer();
+  };
+
+  useEffect(() => {
+    const getBreakpoint = (width) => {
+      if (width < 640) return "base"; // Tailwind "base"
+      else if (width < 768) return "sm"; // Tailwind "sm"
+      else if (width < 900) return "smd";
+      else if (width < 1024) return "md"; // Tailwind "md"
+      else if (width < 1280) return "lg"; // Tailwind "lg"
+      else return "xl"; // Tailwind "xl"
+    };
+
+    const updateScreenWidth = () => {
+      setScreenWidth(getBreakpoint(window.innerWidth));
+    };
+
+    updateScreenWidth(); // initial check
+
+    window.addEventListener("resize", updateScreenWidth);
+    return () => window.removeEventListener("resize", updateScreenWidth);
   }, []);
+
+  useEffect(() => {
+    resetTimer();
+    return () => clearInterval(timerRef.current);
+  }, [carouselImages.length]);
 
   return (
     <section
       className="relative flex flex-col lg:flex-row w-full h-[50vh] sm:h-screen"
-      style={{ paddingTop: "7rem" }}
+      style={
+        screenWidth === "base" || screenWidth === "sm" || screenWidth === "smd"
+          ? { paddingTop: "4rem" }
+          : { paddingTop: "7rem" }
+      }
     >
       {/* Left text area */}
       {/* <div
@@ -92,7 +135,7 @@ const Hero = () => {
 
       {/* image carousel */}
       <div
-        className="relative flex justify-center items-center w-full h-full overflow-hidden"
+        className="bg-blue-950 relative flex justify-center items-center w-full h-full overflow-hidden"
         style={{ padding: "1rem" }}
       >
         <div
@@ -102,7 +145,7 @@ const Hero = () => {
           {carouselImages.map((img) => (
             <img
               key={img.id}
-              className="flex-shrink-0 w-full h-full"
+              className="flex-shrink-0 w-full h-full object-contain md:object-fill lg:object-cover"
               src={img.image}
               alt={img.alt}
             />
@@ -127,13 +170,9 @@ const Hero = () => {
         {/* Previous Button */}
         <button
           type="button"
-          onClick={() =>
-            setCurrentIndex(
-              (prevIndex) =>
-                (prevIndex - 1 + carouselImages.length) % carouselImages.length
-            )
-          }
-          className="absolute top-0 left-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none" style={{padding: '0 16px'}}
+          onClick={handlePrev}
+          className="absolute top-0 left-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none"
+          style={{ padding: "0 16px" }}
         >
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 hover:bg-white/50 group-focus:ring-4 group-focus:ring-white">
             <svg
@@ -157,12 +196,9 @@ const Hero = () => {
         {/* Next Button */}
         <button
           type="button"
-          onClick={() =>
-            setCurrentIndex(
-              (prevIndex) => (prevIndex + 1) % carouselImages.length
-            )
-          }
-          className="absolute top-0 right-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none" style={{padding: '0 16px'}}
+          onClick={handleNext}
+          className="absolute top-0 right-0 z-30 flex items-center justify-center h-full cursor-pointer group focus:outline-none"
+          style={{ padding: "0 16px" }}
         >
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 hover:bg-white/50 group-focus:ring-4 group-focus:ring-white">
             <svg

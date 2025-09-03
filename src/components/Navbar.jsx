@@ -1,10 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [scrollY, setScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [screenWidth, setScreenWidth] = useState("base");
+  const location = useLocation();
+
+  useEffect(() => {
+    const getBreakpoint = (width) => {
+      if (width < 640) return "base"; // Tailwind "base"
+      else if (width < 768) return "sm"; // Tailwind "sm"
+      else if (width < 1024) return "md"; // Tailwind "md"
+      else if (width < 1280) return "lg"; // Tailwind "lg"
+      else return "xl"; // Tailwind "xl"
+    };
+
+    const updateScreenWidth = () => {
+      setScreenWidth(getBreakpoint(window.innerWidth));
+    };
+
+    updateScreenWidth(); // initial check
+
+    window.addEventListener("resize", updateScreenWidth);
+    return () => window.removeEventListener("resize", updateScreenWidth);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -25,15 +46,26 @@ const Navbar = () => {
     >
       <div
         className="flex items-center justify-between"
-        style={{ padding: "20px 50px" }}
+        style={
+          screenWidth === "lg" || screenWidth === "xl"
+            ? { padding: "30px 40px 8px 40px" }
+            : { padding: "10px 20px 0 40px" }
+        }
       >
-        <div className="flex flex-col items-center justify-center">
-          <h1 className="text-2xl md:text-3xl font-black text-red-500">
-            SAMARTH ENTERPRISE
-          </h1>
-          <p className="text-sm md:text-2xl hidden sm:block">
-            Powering Your Projects
-          </p>
+        <div className="flex items-center gap-0">
+          <img
+            src="./assets/logo.png" // <- your "SE" logo image
+            alt="Samarth Enterprise Icon"
+            className="h-15 w-auto object-contain"
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="text-lg md:text-4xl font-bold text-[#23169a]">
+              Samarth <span className="text-[red]">Enterprise</span>
+            </span>
+            <span className="text-sm md:text-base text-gray-500">
+              Powering your projects
+            </span>
+          </div>
         </div>
 
         {/* Desktop Menu */}
@@ -49,7 +81,13 @@ const Navbar = () => {
             ].map((link) => (
               <li key={link.path} className="link">
                 <Link to={link.path}>
-                  <button className="cursor-pointer hover:text-red-500 transition-colors duration-300">
+                  <button
+                    className={`cursor-pointer transition-colors duration-300 ${
+                      location.pathname === link.path
+                        ? "text-red-500 underline underline-offset-4"
+                        : "hover:text-red-500"
+                    }`}
+                  >
                     {link.label}
                   </button>
                 </Link>
@@ -97,7 +135,13 @@ const Navbar = () => {
                 style={{ padding: "12px 0" }}
               >
                 <Link to={link.path} onClick={() => setIsMenuOpen(false)}>
-                  <button className="cursor-pointer hover:text-red-500 transition-colors duration-300 w-full text-left">
+                  <button
+                    className={`cursor-pointer transition-colors duration-300 ${
+                      location.pathname === link.path
+                        ? "text-red-500 underline underline-offset-4"
+                        : "hover:text-red-500"
+                    }`}
+                  >
                     {link.label}
                   </button>
                 </Link>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BuildingOfficeIcon,
   WrenchScrewdriverIcon,
@@ -8,7 +8,6 @@ import {
   ClockIcon,
   CogIcon,
   Construction,
-  ShieldCheckIcon,
   TruckIcon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -16,6 +15,31 @@ import ScrollReveal from "../components/ScrollReveal";
 import AnimatedSection from "../components/AnimatedSection";
 
 const Services = () => {
+  const [screenWidth, setScreenWidth] = useState("base");
+  useEffect(() => {
+    const getBreakpoint = (width) => {
+      if (width < 640) return "base"; // Tailwind "base"
+      else if (width < 768) return "sm"; // Tailwind "sm"
+      else if (width < 900) return "smd";
+      else if (width < 1024) return "md"; // Tailwind "md"
+      else if (width < 1280) return "lg"; // Tailwind "lg"
+      else return "xl"; // Tailwind "xl"
+    };
+
+    const updateScreenWidth = () => {
+      setScreenWidth(getBreakpoint(window.innerWidth));
+    };
+
+    updateScreenWidth(); // initial check
+
+    window.addEventListener("resize", updateScreenWidth);
+    return () => window.removeEventListener("resize", updateScreenWidth);
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const services = [
     {
       icon: TruckIcon,
@@ -109,7 +133,14 @@ const Services = () => {
   ];
 
   return (
-    <div className="min-h-screen" style={{ paddingTop: "7rem" }}>
+    <div
+      className="min-h-screen"
+      style={
+        screenWidth === "base" || screenWidth === "sm" || screenWidth === "smd"
+          ? { paddingTop: "4rem" }
+          : { paddingTop: "7rem" }
+      }
+    >
       {/* Hero Section */}
       <section
         className="relative bg-slate-900 text-white"
@@ -267,9 +298,8 @@ const Services = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {additionalServices.map((service, index) => (
-              <ScrollReveal delay={400}>
+              <ScrollReveal key={index} delay={400}>
                 <div
-                  key={index}
                   className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
                   style={{ padding: "24px" }}
                 >
@@ -324,8 +354,8 @@ const Services = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {industries.map((industry, index) => (
-              <ScrollReveal>
-                <div key={index} className="text-center">
+              <ScrollReveal key={index}>
+                <div className="text-center">
                   <div
                     className="bg-orange-500 rounded-lg"
                     style={{ padding: "16px", marginBottom: "12px" }}

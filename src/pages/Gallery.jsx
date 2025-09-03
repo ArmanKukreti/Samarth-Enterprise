@@ -1,12 +1,13 @@
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ScrollReveal from "../components/ScrollReveal";
 
 const Gallery = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [screenWidth, setScreenWidth] = useState("base");
 
   const categories = [
     { id: "all", name: "All Projects" },
@@ -126,8 +127,39 @@ const Gallery = () => {
     setSelectedImage(filteredImages[prevIndex]);
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    const getBreakpoint = (width) => {
+      if (width < 640) return "base"; // Tailwind "base"
+      else if (width < 768) return "sm"; // Tailwind "sm"
+      else if (width < 900) return "smd";
+      else if (width < 1024) return "md"; // Tailwind "md"
+      else if (width < 1280) return "lg"; // Tailwind "lg"
+      else return "xl"; // Tailwind "xl"
+    };
+
+    const updateScreenWidth = () => {
+      setScreenWidth(getBreakpoint(window.innerWidth));
+    };
+
+    updateScreenWidth(); // initial check
+
+    window.addEventListener("resize", updateScreenWidth);
+    return () => window.removeEventListener("resize", updateScreenWidth);
+  }, []);
+
   return (
-    <div className="min-h-screen" style={{ paddingTop: "7rem" }}>
+    <div
+      className="min-h-screen"
+      style={
+        screenWidth === "base" || screenWidth === "sm" || screenWidth === "smd"
+          ? { paddingTop: "4rem" }
+          : { paddingTop: "7rem" }
+      }
+    >
       {/* Hero Section */}
       <section
         className="relative bg-slate-900 text-white"
@@ -144,49 +176,53 @@ const Gallery = () => {
           style={{ marginLeft: "auto", marginRight: "auto", padding: "0 16px" }}
         >
           <ScrollReveal>
-          <h1
-            className="text-5xl md:text-6xl font-bold"
-            style={{ marginBottom: "24px" }}
-          >
-            Project Gallery
-          </h1>
+            <h1
+              className="text-5xl md:text-6xl font-bold"
+              style={{ marginBottom: "24px" }}
+            >
+              Project Gallery
+            </h1>
           </ScrollReveal>
           <ScrollReveal>
-          <p className="text-xl md:text-2xl text-slate-300">
-            Showcasing our expertise across construction, industrial, and
-            infrastructure projects.
-          </p>
+            <p className="text-xl md:text-2xl text-slate-300">
+              Showcasing our expertise across construction, industrial, and
+              infrastructure projects.
+            </p>
           </ScrollReveal>
         </div>
       </section>
 
       {/* Filter Tabs */}
       <section
-        className="bg-white sticky top-24 z-40 shadow-md"
+        className="bg-white sticky top-16 lg:top-24 z-40 shadow-md"
         style={{ padding: "32px 0" }}
       >
         <ScrollReveal>
-        <div
-          className="max-w-7xl"
-          style={{ marginLeft: "auto", marginRight: "auto", padding: "0 16px" }}
-        >
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`rounded-lg font-semibold transition-all duration-300 ${
-                  selectedCategory === category.id
-                    ? "bg-orange-500 text-white shadow-lg"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                }`}
-                style={{ padding: "12px 24px" }}
-              >
-                {category.name}
-              </button>
-            ))}
+          <div
+            className="max-w-7xl"
+            style={{
+              marginLeft: "auto",
+              marginRight: "auto",
+              padding: "0 16px",
+            }}
+          >
+            <div className="flex flex-wrap justify-center gap-4">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`rounded-lg font-semibold transition-all duration-300 ${
+                    selectedCategory === category.id
+                      ? "bg-orange-500 text-white shadow-lg"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                  style={{ padding: "12px 24px" }}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
         </ScrollReveal>
       </section>
 
@@ -198,46 +234,45 @@ const Gallery = () => {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredImages.map((image, index) => (
-                <ScrollReveal>
-              <div
-                key={image.id}
-                className="group relative bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
-                onClick={() => openLightbox(image, index)}
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={image.src}
-                    alt={image.title}
-                    className="w-full h-full  transition-transform duration-300 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-                    <MagnifyingGlassIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <ScrollReveal key={image.id}>
+                <div
+                  className="group relative bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  onClick={() => openLightbox(image, index)}
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={image.src}
+                      alt={image.title}
+                      className="w-full h-full  transition-transform duration-300 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
+                      <MagnifyingGlassIcon className="h-12 w-12 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div
+                      className="absolute top-4 left-4 bg-orange-500 text-white rounded-full text-sm font-semibold"
+                      style={{ padding: "4px 12px" }}
+                    >
+                      {image.craneType}
+                    </div>
                   </div>
-                  <div
-                    className="absolute top-4 left-4 bg-orange-500 text-white rounded-full text-sm font-semibold"
-                    style={{ padding: "4px 12px" }}
-                  >
-                    {image.craneType}
+                  <div style={{ padding: "24px" }}>
+                    <h3
+                      className="text-xl font-bold text-slate-900"
+                      style={{ marginBottom: "8px" }}
+                    >
+                      {image.title}
+                    </h3>
+                    <p
+                      className="text-slate-600"
+                      style={{ marginBottom: "12px" }}
+                    >
+                      {image.description}
+                    </p>
+                    <p className="text-sm text-orange-500 font-semibold">
+                      {image.location}
+                    </p>
                   </div>
                 </div>
-                <div style={{ padding: "24px" }}>
-                  <h3
-                    className="text-xl font-bold text-slate-900"
-                    style={{ marginBottom: "8px" }}
-                  >
-                    {image.title}
-                  </h3>
-                  <p
-                    className="text-slate-600"
-                    style={{ marginBottom: "12px" }}
-                  >
-                    {image.description}
-                  </p>
-                  <p className="text-sm text-orange-500 font-semibold">
-                    {image.location}
-                  </p>
-                </div>
-              </div>
               </ScrollReveal>
             ))}
           </div>
@@ -315,54 +350,58 @@ const Gallery = () => {
 
       {/* Stats Section */}
       <ScrollReveal>
-      <section
-        className="bg-orange-500 text-white"
-        style={{ padding: "64px 0" }}
-      >
-        <div
-          className="max-w-7xl"
-          style={{ marginLeft: "auto", marginRight: "auto", padding: "0 16px" }}
+        <section
+          className="bg-orange-500 text-white"
+          style={{ padding: "64px 0" }}
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div
-                className="text-4xl font-bold"
-                style={{ marginBottom: "8px" }}
-              >
-                500+
+          <div
+            className="max-w-7xl"
+            style={{
+              marginLeft: "auto",
+              marginRight: "auto",
+              padding: "0 16px",
+            }}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div
+                  className="text-4xl font-bold"
+                  style={{ marginBottom: "8px" }}
+                >
+                  500+
+                </div>
+                <div className="text-orange-100">Projects Completed</div>
               </div>
-              <div className="text-orange-100">Projects Completed</div>
-            </div>
-            <div>
-              <div
-                className="text-4xl font-bold"
-                style={{ marginBottom: "8px" }}
-              >
-                50+
+              <div>
+                <div
+                  className="text-4xl font-bold"
+                  style={{ marginBottom: "8px" }}
+                >
+                  50+
+                </div>
+                <div className="text-orange-100">Active Cranes</div>
               </div>
-              <div className="text-orange-100">Active Cranes</div>
-            </div>
-            <div>
-              <div
-                className="text-4xl font-bold"
-                style={{ marginBottom: "8px" }}
-              >
-                18+
+              <div>
+                <div
+                  className="text-4xl font-bold"
+                  style={{ marginBottom: "8px" }}
+                >
+                  18+
+                </div>
+                <div className="text-orange-100">Years Experience</div>
               </div>
-              <div className="text-orange-100">Years Experience</div>
-            </div>
-            <div>
-              <div
-                className="text-4xl font-bold"
-                style={{ marginBottom: "8px" }}
-              >
-                100%
+              <div>
+                <div
+                  className="text-4xl font-bold"
+                  style={{ marginBottom: "8px" }}
+                >
+                  100%
+                </div>
+                <div className="text-orange-100">Safety Record</div>
               </div>
-              <div className="text-orange-100">Safety Record</div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
       </ScrollReveal>
     </div>
   );

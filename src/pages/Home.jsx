@@ -109,36 +109,34 @@ const Home = () => {
 
   const majorClients = [
     {
-      name: "BANCO ALUMINIUM LID.",
+      name: "BANCO ALUMINIUM LTD.",
       logo: "./assets/clients/Banco.png",
-      delay: 0,
     },
     {
       name: "SCHAEFFLER",
       logo: "./assets/clients/Schaeffler.png",
-      delay: 200,
     },
     {
       name: "LARSEN & TOUBRO",
       logo: "./assets/clients/L&T.png",
-      delay: 400,
     },
     {
       name: "PARAMOUNT LIMITED",
       logo: "./assets/clients/Paramount.png",
-      delay: 600,
     },
     {
       name: "SILOX INDIA",
       logo: "./assets/clients/Silox.png",
-      delay: 800,
     },
     {
       name: "SOPAN",
       logo: "./assets/clients/Sopan.png",
-      delay: 1000,
     },
   ];
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -172,12 +170,18 @@ const Home = () => {
         className="bg-blue-950 text-white"
         style={{ paddingTop: "64px", paddingBottom: "64px" }}
       >
-        <div className="max-w-7xl mx-auto px-4">
+        <div
+          className="max-w-7xl"
+          style={{ margin: "0 auto", padding: "0 16px" }}
+        >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, index) => (
-              <ScrollReveal delay={stat.delay}>
-                <div key={index}>
-                  <div className="text-4xl md:text-5xl font-bold mb-2">
+              <ScrollReveal delay={stat.delay} key={index}>
+                <div>
+                  <div
+                    className="text-4xl md:text-5xl font-bold"
+                    style={{ marginBottom: "8px" }}
+                  >
                     {stat.number}
                   </div>
                   <div className="text-white">{stat.label}</div>
@@ -226,9 +230,8 @@ const Home = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <ScrollReveal delay={feature.delay}>
+              <ScrollReveal delay={feature.delay} key={index}>
                 <div
-                  key={index}
                   className="text-center bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300"
                   style={{ padding: "32px" }}
                 >
@@ -268,24 +271,24 @@ const Home = () => {
         >
           <div className="text-center" style={{ marginBottom: "64px" }}>
             <ScrollReveal>
-            <h2
-              className="text-4xl md:text-5xl font-bold text-slate-900"
-              style={{ marginBottom: "16px" }}
-            >
-              Our Crane Fleet
-            </h2>
+              <h2
+                className="text-4xl md:text-5xl font-bold text-slate-900"
+                style={{ marginBottom: "16px" }}
+              >
+                Our Crane Fleet
+              </h2>
             </ScrollReveal>
             <ScrollReveal delay={200}>
-            <p
-              className="text-xl text-slate-600 max-w-4xl"
-              style={{ marginLeft: "auto", marginRight: "auto" }}
-            >
-              Samarth Enterprise boasts a comprehensive and meticulously
-              maintained fleet of cranes, designed to tackle any lifting
-              challenge. Our diverse range ensures we have the right equipment
-              for every project, from compact sites to large-scale industrial
-              operations.
-            </p>
+              <p
+                className="text-xl text-slate-600 max-w-4xl"
+                style={{ marginLeft: "auto", marginRight: "auto" }}
+              >
+                Samarth Enterprise boasts a comprehensive and meticulously
+                maintained fleet of cranes, designed to tackle any lifting
+                challenge. Our diverse range ensures we have the right equipment
+                for every project, from compact sites to large-scale industrial
+                operations.
+              </p>
             </ScrollReveal>
           </div>
 
@@ -487,9 +490,8 @@ const Home = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
             {majorClients.map((client, index) => (
-              <ScrollReveal delay={client.delay}>
+              <ScrollReveal key={index}>
                 <div
-                  key={index}
                   className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
                   style={{ padding: "24px" }}
                 >

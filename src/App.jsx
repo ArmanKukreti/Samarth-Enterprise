@@ -6,6 +6,7 @@ import Services from "./pages/Services"
 import Gallery from "./pages/Gallery"
 import Contact from "./pages/Contact"
 import Clients from "./pages/Clients"
+import Footer from "./components/Footer"
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
       <Route element={<Gallery/>} path="/gallery"></Route>
       <Route element={<Contact/>} path="/contact"></Route>
     </Routes>
+    <Footer/>
     </>
   )
 }
